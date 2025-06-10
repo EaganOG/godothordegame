@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://cs7kqs46rpqg6"]
+
+[ext_resource type="Script" uid="uid://4loaino05n5h" path="res://player/arrow.gd" id="1_y55yf"]
+[ext_resource type="Texture2D" uid="uid://dmp2esu6pwws0" path="res://arrow.png" id="2_qbdyu"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7hrbj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y68up"]
+
+[node name="Arrow" type="Area2D"]
+script = ExtResource("1_y55yf")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+scale = Vector2(20, 20)
+mesh = SubResource("BoxMesh_7hrbj")
+texture = ExtResource("2_qbdyu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_y68up")

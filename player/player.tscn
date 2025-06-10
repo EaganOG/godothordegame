@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://df4yy2bi18l24"]
+
+[ext_resource type="Script" uid="uid://btio2vuau4twk" path="res://player/player.gd" id="1_4flbx"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_oul6g"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oul6g"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_rkbax"]
+
+[node name="playerNode" type="CharacterBody2D"]
+script = ExtResource("1_4flbx")
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="."]
+position = Vector2(0, -30.9993)
+scale = Vector2(12, 58.0013)
+mesh = SubResource("BoxMesh_oul6g")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(5, 5)
+shape = SubResource("CircleShape2D_oul6g")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+position = Vector2(-5.96046e-08, 0)
+scale = Vector2(98.1111, 98)
+mesh = SubResource("SphereMesh_rkbax")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.6, 0.6)
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(0, -135)
