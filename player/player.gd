@@ -1,5 +1,6 @@
 extends CharacterBody2D
 var ArrowScene = preload("res://player/Arrow.tscn")
+@onready var hurtbox = $hurtbox
 
 @onready var ui = get_tree().current_scene.get_node("Ui")
 @onready var health = 100
@@ -12,17 +13,28 @@ var ArrowScene = preload("res://player/Arrow.tscn")
 const SPEED = 600
 var shoot_cooldown = 0.5
 var shoot_cooldown_timer = 0.0
+var damage_cooldown = 0.5
+var damage_timer = 0.0
+var touching_enemies: Array[Node] = []
 
 var auto_attack = false
 
 @onready var ray = $RayCast2D
+
+
+func _ready():
+	hurtbox.body_entered.connect(_on_HurtBox_body_entered)
+	hurtbox.body_exited.connect(_on_HurtBox_body_exited)
+
 
 func _physics_process(delta: float) -> void:
 	ui.update_ui(self)
 	# Movement
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * SPEED
-	move_and_slide()
+	var collision = move_and_collide(velocity * delta)
+	if collision and collision.get_collider() is Enemy:
+		take_damage(10)
 
 	# Get global mouse position
 	var mouse_pos = get_global_mouse_position()
@@ -45,6 +57,11 @@ func _physics_process(delta: float) -> void:
 	# Update cooldown timer
 	if shoot_cooldown_timer > 0:
 		shoot_cooldown_timer -= delta
+	
+	if damage_timer > 0:
+		damage_timer -= delta
+	elif touching_enemies.size() >0:
+		take_damage(10)
 
 	# Auto or manual attack
 	if auto_attack and shoot_cooldown_timer <= 0:
@@ -54,12 +71,21 @@ func _physics_process(delta: float) -> void:
 		shoot()
 		shoot_cooldown_timer = shoot_cooldown
 
+func _on_HurtBox_body_entered(body):
+	if body is Enemy and not touching_enemies.has(body):
+		touching_enemies.append(body)
+
+func _on_HurtBox_body_exited(body):
+	if body is Enemy:
+		touching_enemies.erase(body)
+
+
 func shoot():
 	var arrow = ArrowScene.instantiate()
 	get_tree().current_scene.add_child(arrow)
 
 	# Position it at the player
-	arrow.global_position = global_position
+	arrow.global_position = global_position + ray.target_position.normalized() * 20
 
 	# Set direction based on raycast
 	var dir = (ray.target_position).normalized()
@@ -79,3 +105,18 @@ func level_up():
 	level += 1
 	req_exp = int(req_exp * 1.5)  # Scale difficulty
 	ui.update_ui(self)  # Update UI after level change
+	
+func take_damage(amount: int):
+	if damage_timer > 0:
+		return  # Still in cooldown
+
+	health -= amount
+	damage_timer = damage_cooldown
+
+	if health <= 0:
+		die()
+
+	ui.update_ui(self)
+
+func die():
+	queue_free()

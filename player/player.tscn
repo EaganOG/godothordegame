@@ -1,20 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://df4yy2bi18l24"]
+[gd_scene load_steps=6 format=3 uid="uid://df4yy2bi18l24"]
 
 [ext_resource type="Script" uid="uid://btio2vuau4twk" path="res://player/player.gd" id="1_4flbx"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_oul6g"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_oul6g"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_rkbax"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_oul6g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oul6g"]
+
 [node name="playerNode" type="CharacterBody2D"]
 script = ExtResource("1_4flbx")
-
-[node name="MeshInstance2D2" type="MeshInstance2D" parent="."]
-position = Vector2(0, -30.9993)
-scale = Vector2(12, 58.0013)
-mesh = SubResource("BoxMesh_oul6g")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 scale = Vector2(5, 5)
@@ -25,8 +22,20 @@ position = Vector2(-5.96046e-08, 0)
 scale = Vector2(98.1111, 98)
 mesh = SubResource("SphereMesh_rkbax")
 
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="MeshInstance2D"]
+position = Vector2(6.07521e-10, -0.316319)
+scale = Vector2(0.12231, 0.59185)
+mesh = SubResource("BoxMesh_oul6g")
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.6, 0.6)
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
-target_position = Vector2(0, -135)
+scale = Vector2(5.4, 1)
+target_position = Vector2(0, -102)
+
+[node name="hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="hurtbox"]
+scale = Vector2(5.04, 5.04)
+shape = SubResource("RectangleShape2D_oul6g")

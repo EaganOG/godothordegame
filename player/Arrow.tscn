@@ -8,6 +8,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y68up"]
 
 [node name="Arrow" type="Area2D"]
+collision_layer = 4
 script = ExtResource("1_y55yf")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
