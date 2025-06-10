@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnukwpa11jin4"]
+
+[ext_resource type="Script" uid="uid://oaf1qltush0l" path="res://player/MeleeWeapon.gd" id="1_melee"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_melee"]
+size = Vector2(100, 50)
+
+[node name="MeleeWeapon" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_melee")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_melee")
+
+[node name="Visual" type="MeshInstance2D" parent="."]
+visible = false
+
+[node name="WeaponMesh" type="MeshInstance2D" parent="Visual"]

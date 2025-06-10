@@ -1,0 +1,155 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqm5x8yvh0p1f"]
+
+[ext_resource type="Script" uid="uid://b8g2lxjduvasu" path="res://PerkSelectionUI.gd" id="1_perk_ui"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0, 0, 0, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="PerkSelectionUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_perk_ui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "LEVEL UP!"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Choose a perk to enhance your abilities"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PerkChoices" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PerkChoice1" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices"]
+layout_mode = 2
+
+[node name="PerkButton1" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice1"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+
+[node name="PerkName1" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Perk Name"
+horizontal_alignment = 1
+
+[node name="PerkDesc1" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Perk description goes here and can be multiple lines long"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PerkRarity1" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "COMMON"
+horizontal_alignment = 1
+
+[node name="PerkChoice2" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices"]
+layout_mode = 2
+
+[node name="PerkButton2" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice2"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+
+[node name="PerkName2" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Perk Name"
+horizontal_alignment = 1
+
+[node name="PerkDesc2" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Perk description goes here and can be multiple lines long"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PerkRarity2" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "COMMON"
+horizontal_alignment = 1
+
+[node name="PerkChoice3" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices"]
+layout_mode = 2
+
+[node name="PerkButton3" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice3"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+
+[node name="PerkName3" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Perk Name"
+horizontal_alignment = 1
+
+[node name="PerkDesc3" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Perk description goes here and can be multiple lines long"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PerkRarity3" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/MarginContainer/VBoxContainer/PerkChoices/PerkChoice3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "COMMON"
+horizontal_alignment = 1

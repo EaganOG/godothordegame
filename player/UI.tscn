@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0dwqenlyx8dd"]
+[gd_scene load_steps=3 format=3 uid="uid://b0dwqenlyx8dd"]
 
 [ext_resource type="Script" uid="uid://b03newbkphaeo" path="res://player/ui.gd" id="1_6clm8"]
+[ext_resource type="Texture2D" uid="uid://o8253ff23xk5" path="res://player/ab-icons/ab.png" id="2_x5gix"]
 
 [node name="Ui" type="CanvasLayer"]
 script = ExtResource("1_6clm8")
@@ -8,7 +9,7 @@ script = ExtResource("1_6clm8")
 [node name="MarginContainer" type="MarginContainer" parent="."]
 offset_left = 46.0
 offset_right = 247.0
-offset_bottom = 621.0
+offset_bottom = 534.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
@@ -25,3 +26,64 @@ layout_mode = 2
 
 [node name="Level" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -77.0
+offset_top = -45.0
+offset_right = 77.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Abilitybar" type="HBoxContainer" parent="MarginContainer2"]
+layout_mode = 2
+
+[node name="Ability1" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+icon = ExtResource("2_x5gix")
+icon_alignment = 1
+
+[node name="Ability2" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
+icon_alignment = 1
+
+[node name="Ability3" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
+
+[node name="Ability4" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 1"
+
+[node name="Ability5" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
+
+[node name="Ability6" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
+
+[node name="Ability7" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 1"
+
+[node name="Ability8" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
+
+[node name="Ability9" type="Button" parent="MarginContainer2/Abilitybar"]
+layout_mode = 2
+text = "Ability 2
+"
