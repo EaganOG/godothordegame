@@ -7,7 +7,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lcl3f"]
 
 [node name="TestEnemy" type="CharacterBody2D"]
-scale = Vector2(11.72, 11.72)
+scale = Vector2(44.4, 44.4)
 collision_layer = 5
 collision_mask = 5
 script = ExtResource("1_lcl3f")

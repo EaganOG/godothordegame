@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var level_label = $MarginContainer/VBoxContainer/Level
 
 func update_ui(player):
+	scale = Vector2(1.5, 1.5)
 	health_bar.value = player.health
 	health_bar.max_value = player.max_health
 	

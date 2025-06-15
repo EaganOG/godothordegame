@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0dwqenlyx8dd"]
+[gd_scene load_steps=3 format=3 uid="uid://b0dwqenlyx8dd"]
 
 [ext_resource type="Script" uid="uid://b03newbkphaeo" path="res://player/ui.gd" id="1_6clm8"]
+[ext_resource type="FontFile" uid="uid://bfyumow0o36ll" path="res://assets/Font/Pixel Game.otf" id="2_x5gix"]
 
 [node name="Ui" type="CanvasLayer"]
 script = ExtResource("1_6clm8")
@@ -16,6 +17,8 @@ alignment = 2
 
 [node name="Health" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_x5gix")
 
 [node name="Stamina" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

@@ -1,6 +1,8 @@
 extends CharacterBody2D
 var ArrowScene = preload("res://player/Arrow.tscn")
+var SlimeBomb = preload("res://Slimeball.tscn")
 @onready var hurtbox = $hurtbox
+@onready var camera = $Camera2D
 
 @onready var ui = get_tree().current_scene.get_node("Ui")
 @onready var health: int
@@ -43,27 +45,261 @@ var dash_duration_timer = 0.0
 
 @onready var ray = $RayCast2D
 
+# Perk system integration
+var perk_manager: PerkManager
+var level_up_ui: Control
+
 func _ready():
 	add_to_group("player")
 	hurtbox.body_entered.connect(_on_HurtBox_body_entered)
 	hurtbox.body_exited.connect(_on_HurtBox_body_exited)
+	setup_vampire_survivors_camera()
+	$Camera2D.position_smoothing_enabled = true
+	$Camera2D.position_smoothing_speed = 5.0
+	
+	# Initialize perk system
+	setup_perk_system()
 	
 	# Apply class stats
 	apply_class_stats()
+
+func setup_perk_system():
+	# Create perk manager
+	perk_manager = PerkManager.new()
+	add_child.call_deferred(perk_manager)
+	
+	# Create simple level up UI directly in player script
+	level_up_ui = create_simple_level_up_ui()
+	get_tree().current_scene.add_child.call_deferred(level_up_ui)
+	print("Level up UI creation deferred")
+
+func create_simple_level_up_ui() -> Control:
+	var ui = Control.new()
+	ui.name = "LevelUpUI"
+	ui.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	# Don't use preset - we'll position it manually at player location
+	ui.visible = false
+	ui.z_index = 1000  # Very high z-index to ensure it's on top
+	ui.scale = Vector2(2.5,2.5)
+	
+	# Create a very visible overlay first
+	var overlay = ColorRect.new()
+	overlay.size = Vector2(800, 600)  # Fixed size instead of full screen
+	overlay.position = Vector2(-400, -300)  # Center the overlay
+	overlay.color = Color(1, 0, 0, 0.5)  # RED overlay so we can definitely see it
+	ui.add_child(overlay)
+	
+	# Create background panel centered on the overlay
+	var background = Panel.new()
+	background.size = Vector2(600, 300)
+	background.position = Vector2(-300, -150)  # Center it on the UI
+	ui.add_child(background)
+	
+	# Add a bright background color to make it super visible
+	var style_box = StyleBoxFlat.new()
+	style_box.bg_color = Color(0, 1, 0, 0)
+	background.add_theme_stylebox_override("panel", style_box)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 20)
+	background.add_child(vbox)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	vbox.add_child(margin)
+	
+	var content_vbox = VBoxContainer.new()
+	margin.add_child(content_vbox)
+	
+	var level_label = Label.new()
+	level_label.name = "LevelLabel"
+	level_label.text = "Level Up!"
+	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	level_label.add_theme_font_size_override("font_size", 32)
+	level_label.add_theme_color_override("font_color", Color.BLACK)  # Black text on green background
+	content_vbox.add_child(level_label)
+	
+	var title_label = Label.new()
+	title_label.name = "TitleLabel"
+	title_label.text = "Choose Your Perk"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_label.add_theme_font_size_override("font_size", 20)
+	title_label.add_theme_color_override("font_color", Color.BLACK)
+	content_vbox.add_child(title_label)
+	
+	var separator = HSeparator.new()
+	content_vbox.add_child(separator)
+	
+	var perk_container = HBoxContainer.new()
+	perk_container.name = "PerkContainer"
+	perk_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	perk_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	perk_container.add_theme_constant_override("separation", 20)
+	content_vbox.add_child(perk_container)
+	
+	print("UI structure created with BRIGHT COLORS - will be positioned at player location!")
+	return ui
+
+# Handle level up UI directly in player script
+func show_level_up_ui():
+	print("show_level_up_ui called")
+	
+	if not level_up_ui:
+		print("ERROR: level_up_ui is null!")
+		handle_level_up_without_ui()
+		return
+		
+	if not perk_manager:
+		print("ERROR: perk_manager is null!")
+		handle_level_up_without_ui()
+		return
+	
+	# Position the UI at the player's world position
+	level_up_ui.global_position = global_position
+	print("Positioned UI at player location: ", global_position)
+	
+	var available_perks = perk_manager.generate_random_perks(level, 3)
+	print("Generated %d perks for level %d" % [available_perks.size(), level])
+	
+	if available_perks.is_empty():
+		print("No perks available for level ", level)
+		handle_level_up_without_ui()
+		return
+	
+	# Update labels
+	var level_label = level_up_ui.find_child("LevelLabel", true, false)
+	var title_label = level_up_ui.find_child("TitleLabel", true, false)
+	
+	print("Found level_label: ", level_label)
+	print("Found title_label: ", title_label)
+	
+	if level_label:
+		level_label.text = "Level %d Reached!" % level
+	if title_label:
+		title_label.text = "Choose Your Perk"
+	
+	# Create perk buttons
+	var perk_container = level_up_ui.find_child("PerkContainer", true, false)
+	print("Found perk_container: ", perk_container)
+	
+	if not perk_container:
+		print("Could not find perk container!")
+		handle_level_up_without_ui()
+		return
+	
+	# Clear existing buttons
+	for child in perk_container.get_children():
+		child.queue_free()
+	
+	print("Creating %d perk buttons..." % available_perks.size())
+	
+	# Create buttons for each perk
+	for i in range(available_perks.size()):
+		var perk = available_perks[i]
+		var button = Button.new()
+		button.text = "%s\n%s\n(%s)" % [perk.perk_name, perk.description, perk.get_rarity_name()]
+		button.custom_minimum_size = Vector2(200, 120)
+		button.modulate = perk.get_rarity_color()
+		
+		# Connect button to selection
+		button.pressed.connect(_on_perk_selected.bind(perk))
+		
+		perk_container.add_child(button)
+		print("Created button for: ", perk.perk_name)
+	
+	# Show UI and pause
+	print("Setting UI visible and pausing game...")
+	print("UI visible before: ", level_up_ui.visible)
+	print("UI global position: ", level_up_ui.global_position)
+	print("UI size: ", level_up_ui.size)
+	
+	level_up_ui.visible = true
+	get_tree().paused = true
+	
+	print("UI visible after: ", level_up_ui.visible)
+	print("Game paused: ", get_tree().paused)
+	print("Level up UI shown with %d perk options at player position" % available_perks.size())
+
+func _on_perk_selected(perk: Perk):
+	# Add perk to manager
+	if perk_manager.add_perk(perk):
+		apply_perk_multipliers()
+		print("Selected perk: %s (%s)" % [perk.perk_name, perk.get_rarity_name()])
+	
+	# Hide UI and unpause
+	if level_up_ui:
+		level_up_ui.visible = false
+	get_tree().paused = false
 
 func apply_class_stats():
 	player_class = GameManager.selected_player_class
 	if not player_class:
 		player_class = PlayerClass.create_slug()  # Default fallback
 	
-	# Apply base stats with class multipliers
-	max_health = int(player_class.base_health * player_class.health_multiplier)
-	health = max_health
-	max_stam = int(player_class.base_stamina * player_class.stamina_multiplier)
-	stamina = max_stam
-	SPEED = int(player_class.base_speed * player_class.speed_multiplier)
-	damage = int(player_class.base_damage * player_class.damage_multiplier)
-	shoot_cooldown = 0.5 / player_class.attack_speed_multiplier
+	# Apply base stats with class multipliers AND perk multipliers
+	apply_perk_multipliers()
+
+func apply_perk_multipliers():
+	if not perk_manager:
+		print("WARNING: No perk manager found")
+		return
+	
+	# Wait a frame to ensure perk manager is ready
+	if not perk_manager.is_node_ready():
+		await get_tree().process_frame
+	
+	# Get perk multipliers
+	var health_mult = perk_manager.get_stat_multiplier(Perk.PerkType.HEALTH)
+	var stamina_mult = perk_manager.get_stat_multiplier(Perk.PerkType.STAMINA)
+	var damage_mult = perk_manager.get_stat_multiplier(Perk.PerkType.DAMAGE)
+	var attack_speed_mult = perk_manager.get_stat_multiplier(Perk.PerkType.ATTACK_SPEED)
+	var movement_speed_mult = perk_manager.get_stat_multiplier(Perk.PerkType.MOVEMENT_SPEED)
+	var health_regen_mult = perk_manager.get_stat_multiplier(Perk.PerkType.HEALTH_REGEN)
+	var stamina_regen_mult = perk_manager.get_stat_multiplier(Perk.PerkType.STAMINA_REGEN)
+	var ability_cooldown_mult = perk_manager.get_stat_multiplier(Perk.PerkType.ABILITY_COOLDOWN)
+	
+	print("Applying perk multipliers - Health: %.2f, Damage: %.2f, Speed: %.2f" % [health_mult, damage_mult, movement_speed_mult])
+	
+	# Calculate old health percentage to maintain after stat changes
+	var health_percentage = float(health) / float(max_health) if max_health > 0 else 1.0
+	var stamina_percentage = float(stamina) / float(max_stam) if max_stam > 0 else 1.0
+	
+	# Apply all multipliers (class stats * perk multipliers)
+	max_health = int(player_class.base_health * player_class.health_multiplier * health_mult)
+	max_stam = int(player_class.base_stamina * player_class.stamina_multiplier * stamina_mult)
+	SPEED = int(player_class.base_speed * player_class.speed_multiplier * movement_speed_mult)
+	damage = int(player_class.base_damage * player_class.damage_multiplier * damage_mult)
+	shoot_cooldown = (0.5 / player_class.attack_speed_multiplier) / attack_speed_mult
+	
+	# Update regeneration rates
+	health_regen_rate = 1.0 / health_regen_mult  # Lower = faster regen
+	stamina_regen_rate = 1.0 / stamina_regen_mult  # Lower = faster regen
+	
+	# Update ability cooldowns (this affects new cooldowns, existing ones continue)
+	var base_ability_cooldowns = [3.0, 4.0, 5.0]  # Base cooldowns for abilities
+	for i in range(ability_cooldowns.size()):
+		# Only apply to abilities that aren't currently on cooldown
+		if ability_cooldowns[i] <= 0:
+			if player_class.ability_1 and i == 0:
+				player_class.ability_1.cooldown = player_class.ability_1.cooldown * ability_cooldown_mult
+			elif player_class.ability_2 and i == 1:
+				player_class.ability_2.cooldown = player_class.ability_2.cooldown * ability_cooldown_mult
+			elif player_class.ability_3 and i == 2:
+				player_class.ability_3.cooldown = player_class.ability_3.cooldown * ability_cooldown_mult
+	
+	# Maintain health/stamina percentages after stat changes
+	health = int(max_health * health_percentage)
+	stamina = int(max_stam * stamina_percentage)
+	
+	# Ensure we don't exceed maximums
+	health = min(health, max_health)
+	stamina = min(stamina, max_stam)
+	
+	print("Stats updated - Health: %d/%d, Damage: %d, Speed: %d" % [health, max_health, damage, SPEED])
 
 func _physics_process(delta: float) -> void:
 	ui.update_ui(self)
@@ -136,15 +372,14 @@ func _physics_process(delta: float) -> void:
 	if player_class.has_regeneration:
 		health_regen_timer += delta
 		if health_regen_timer >= health_regen_rate and health < max_health:
-			health = max(health + 1, max_health)
+			health = min(health + 1, max_health)
 			health_regen_timer = 0.0
 	
-	# Replace the stamina regeneration section in your _physics_process function:
-
+	# Stamina regeneration
 	if player_class.has_stamina_regen:
 		stamina_regen_timer += delta
 		if stamina_regen_timer >= stamina_regen_rate and stamina < max_stam:
-			stamina = min(stamina + 1, max_stam)  # Also changed max() to min()
+			stamina = min(stamina + 1, max_stam)
 			stamina_regen_timer = 0.0
 
 func use_ability(ability_slot: int):
@@ -225,13 +460,13 @@ func start_dash():
 
 func throw_slime_bomb():
 	# Create a slime projectile that slows enemies
-	var slime = ArrowScene.instantiate()  # Reuse arrow for now
+	var slime = SlimeBomb.instantiate()  # Reuse arrow for now
 	get_tree().current_scene.add_child(slime)
 	slime.global_position = global_position + ray.target_position.normalized() * 30
 	slime.direction = ray.target_position.normalized()
 	slime.damage = damage * 0.5  # Less damage but applies slow effect
 	slime.speed = 400  # Slower than arrows
-	slime.modulate = Color.GREEN  # Make it green
+	slime.piercing = false
 	print("Slime bomb thrown!")
 
 func blood_squirt():
@@ -342,7 +577,22 @@ func level_up():
 	exp -= req_exp
 	level += 1
 	req_exp = int(req_exp * 1.5)
+	
+	# Show level up UI for perk selection
+	show_level_up_ui()
+	
 	ui.update_ui(self)
+
+func handle_level_up_without_ui():
+	# Simple fallback: automatically give a random perk
+	if perk_manager:
+		var random_perks = perk_manager.generate_random_perks(level, 1)
+		if random_perks.size() > 0:
+			perk_manager.add_perk(random_perks[0])
+			apply_perk_multipliers()
+			print("Auto-selected perk: ", random_perks[0].perk_name, " (", random_perks[0].get_rarity_name(), ")")
+		else:
+			print("No perks available for level ", level)
 	
 func take_damage(amount: int):
 	if damage_timer > 0 or is_dashing:  # Dash makes you invulnerable
@@ -358,3 +608,23 @@ func take_damage(amount: int):
 
 func die():
 	queue_free()
+
+func setup_vampire_survivors_camera():
+	if camera:
+		# Vampire Survivors style zoom - much more zoomed out
+		camera.zoom = Vector2(0.3, 0.3)  # Try values between 0.2-0.4
+		
+		# Enable camera smoothing for smoother movement
+		camera.enabled = true
+		camera.position_smoothing_enabled = true
+		camera.position_smoothing_speed = 5.0  # Adjust for responsiveness
+		
+		# Optional: Add camera limits if you have world boundaries
+		# camera.limit_left = -5000
+		# camera.limit_right = 5000
+		# camera.limit_top = -5000
+		# camera.limit_bottom = 5000
+		
+		# Make camera current
+		camera.make_current()
+		print("Vampire Survivors camera setup complete - Zoom: ", camera.zoom)

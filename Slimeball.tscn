@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://qni6k7bv5j1v"]
+
+[ext_resource type="Texture2D" uid="uid://bmpvj7g6wuqc2" path="res://Slimeball.png" id="1_p5u1r"]
+[ext_resource type="Script" uid="uid://btfg0xmjly78e" path="res://slimeball.gd" id="2_hp7gb"]
+
+[sub_resource type="Animation" id="Animation_ffi80"]
+resource_name = "shoot"
+length = 0.45
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.05, 0.15, 0.25, 0.35, 2.36667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 0]
+}
+
+[sub_resource type="Animation" id="Animation_v8ge6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dsedf"]
+_data = {
+&"RESET": SubResource("Animation_v8ge6"),
+&"shoot": SubResource("Animation_ffi80")
+}
+
+[node name="Slimeball" type="Sprite2D"]
+scale = Vector2(4, 4)
+texture = ExtResource("1_p5u1r")
+hframes = 4
+script = ExtResource("2_hp7gb")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_dsedf")
+}

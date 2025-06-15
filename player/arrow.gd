@@ -4,15 +4,18 @@ var direction = Vector2.ZERO
 var damage = 25
 var piercing = false
 var hit_enemies: Array[Node] = []
+var spawn_position: Vector2  # Track where the arrow was created
 
 func _ready() -> void:
 	connect("body_entered", self._on_body_entered)
+	spawn_position = global_position  # Remember where we started
 
 func _process(delta):
 	position += direction * speed * delta
 	
-	# Remove arrow if it goes too far off screen
-	if global_position.distance_to(Vector2.ZERO) > 2000:
+	# Remove arrow if it's far from the camera/player
+	var player = get_tree().get_first_node_in_group("player")
+	if player and global_position.distance_to(player.global_position) > 3000:
 		queue_free()
 
 func _on_body_entered(body):

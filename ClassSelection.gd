@@ -7,6 +7,7 @@ extends Control
 @onready var stats_label = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/Stats
 @onready var abilities_label = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/Abilities
 @onready var select_button = $VBoxContainer/MainContainer/InfoPanel/SelectButton
+@onready var back_button = $Button
 
 var available_classes: Array[PlayerClass]
 var selected_class: PlayerClass
@@ -25,6 +26,8 @@ func _ready():
 	
 	if available_classes.size() > 0:
 		select_class(available_classes[0])  # Select first class by default
+		
+	back_button.pressed.connect(_on_back_pressed)
 
 func create_class_buttons():
 	# Clear existing buttons
@@ -115,3 +118,6 @@ func _on_select_button_pressed():
 		else:
 			print("main.tscn not found - replace with your main game scene path")
 			print("Selected class: ", selected_class.player_class_name)
+
+func _on_back_pressed():
+	get_tree().change_scene_to_file("res://MainMenu.tscn")

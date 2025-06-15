@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dgdjcgi5ahb5f"]
+[gd_scene load_steps=3 format=3 uid="uid://dgdjcgi5ahb5f"]
 
 [ext_resource type="Script" uid="uid://r7nqhv2nma45" path="res://ClassSelection.gd" id="1_ib1kh"]
+[ext_resource type="Texture2D" uid="uid://ewkcn2t76xn2" path="res://assets/Space Background.png" id="2_m4wiv"]
 
 [node name="ClassSelection" type="Control"]
 layout_mode = 3
@@ -11,14 +12,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ib1kh")
 
-[node name="Background" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.1, 0.1, 0.2, 1)
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_m4wiv")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -109,5 +107,14 @@ offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "Select Class"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 49.0
+offset_right = 105.0
+offset_bottom = 93.0
+theme_override_font_sizes/font_size = 35
+text = "Back"
 
 [connection signal="pressed" from="VBoxContainer/MainContainer/InfoPanel/SelectButton" to="." method="_on_select_button_pressed"]

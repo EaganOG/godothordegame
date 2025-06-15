@@ -11,13 +11,21 @@ config_version=5
 [application]
 
 config/name="HordeMode"
-run/main_scene="uid://dgdjcgi5ahb5f"
+run/main_scene="uid://dp1b5fuicax0j"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameManager="*res://GameManager.gd"
+
+[display]
+
+window/stretch/aspect="keep_width"
+
+[gui]
+
+theme/custom_font="uid://bfyumow0o36ll"
 
 [input]
 
