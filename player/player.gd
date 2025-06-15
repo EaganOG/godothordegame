@@ -13,6 +13,10 @@ var SlimeBomb = preload("res://Slimeball.tscn")
 @onready var exp = 0
 @onready var req_exp = 100
 
+# Class-specific sprite and animation variables
+@onready var current_sprite: Node2D
+@onready var current_animations: AnimationPlayer
+
 var SPEED: int
 var damage: int
 var shoot_cooldown: float
@@ -57,11 +61,47 @@ func _ready():
 	$Camera2D.position_smoothing_enabled = true
 	$Camera2D.position_smoothing_speed = 5.0
 	
+	# Set up class-specific sprite and animations
+	setup_class_visuals()
+	
 	# Initialize perk system
 	setup_perk_system()
 	
 	# Apply class stats
 	apply_class_stats()
+
+func setup_class_visuals():
+	player_class = GameManager.selected_player_class
+	if not player_class:
+		player_class = PlayerClass.create_slug()  # Default fallback
+	
+	# Hide all sprites first
+	$pigSprite.visible = false
+	$slugSprite.visible = false
+	$lizardSprite.visible = false
+	$toadSprite.visible = false
+	
+	# Show and assign the correct sprite based on class
+	match player_class.player_class_name:  # Assuming your PlayerClass has a class_name property
+		"Pig":
+			current_sprite = $pigSprite
+			current_animations = $pigSprite/piganimations
+		"Slug":
+			current_sprite = $pigSprite
+			current_animations = $pigSprite/piganimations
+		"Short Horn Lizard":
+			current_sprite = $pigSprite
+			current_animations = $pigSprite/piganimations
+		"Cane Toad":
+			current_sprite = $toadSprite
+			current_animations = $toadSprite/toadAnimations
+		_:
+			# Default fallback to pig
+			current_sprite = $pigSprite
+			current_animations = $pigSprite/piganimations
+	
+	current_sprite.visible = true
+	print("Set up visuals for class: ", player_class.player_class_name)
 
 func setup_perk_system():
 	# Create perk manager
@@ -77,27 +117,44 @@ func create_simple_level_up_ui() -> Control:
 	var ui = Control.new()
 	ui.name = "LevelUpUI"
 	ui.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
-	# Don't use preset - we'll position it manually at player location
 	ui.visible = false
 	ui.z_index = 1000  # Very high z-index to ensure it's on top
-	ui.scale = Vector2(2.5,2.5)
 	
-	# Create a very visible overlay first
+	# Get camera viewport size
+	var viewport_size = Vector2(get_viewport().size)  # Convert Vector2i to Vector2
+	var camera_zoom = camera.zoom
+	
+	# Calculate the actual visible area based on camera zoom
+	var visible_area = viewport_size / camera_zoom
+	
+	# Create overlay that matches the camera's visible area
 	var overlay = ColorRect.new()
-	overlay.size = Vector2(800, 600)  # Fixed size instead of full screen
-	overlay.position = Vector2(-400, -300)  # Center the overlay
-	overlay.color = Color(1, 0, 0, 0.5)  # RED overlay so we can definitely see it
+	overlay.size = visible_area
+	overlay.position = -visible_area / 2  # Center the overlay on the player
+	overlay.color = Color(0, 0, 0, 0.7)  # Semi-transparent dark overlay
 	ui.add_child(overlay)
 	
-	# Create background panel centered on the overlay
+	# Create background panel that's responsive to viewport size
+	var panel_width = min(visible_area.x * 0.8, 800)  # 80% of visible width, max 800
+	var panel_height = min(visible_area.y * 0.6, 400)  # 60% of visible height, max 400
+	
 	var background = Panel.new()
-	background.size = Vector2(600, 300)
-	background.position = Vector2(-300, -150)  # Center it on the UI
+	background.size = Vector2(panel_width, panel_height)
+	background.position = Vector2(-panel_width / 2, -panel_height / 2)  # Center it
 	ui.add_child(background)
 	
-	# Add a bright background color to make it super visible
+	# Style the background
 	var style_box = StyleBoxFlat.new()
-	style_box.bg_color = Color(0, 1, 0, 0)
+	style_box.bg_color = Color(0.2, 0.2, 0.3, 0.95)  # Dark blue-gray background
+	style_box.border_color = Color(0.8, 0.8, 0.8, 1.0)
+	style_box.border_width_left = 3
+	style_box.border_width_right = 3
+	style_box.border_width_top = 3
+	style_box.border_width_bottom = 3
+	style_box.corner_radius_top_left = 10
+	style_box.corner_radius_top_right = 10
+	style_box.corner_radius_bottom_left = 10
+	style_box.corner_radius_bottom_right = 10
 	background.add_theme_stylebox_override("panel", style_box)
 	
 	var vbox = VBoxContainer.new()
@@ -115,20 +172,24 @@ func create_simple_level_up_ui() -> Control:
 	var content_vbox = VBoxContainer.new()
 	margin.add_child(content_vbox)
 	
+	# Scale font sizes based on viewport size
+	var base_font_size = min(visible_area.x / 30, 32)  # Responsive font sizing
+	var title_font_size = min(visible_area.x / 40, 24)
+	
 	var level_label = Label.new()
 	level_label.name = "LevelLabel"
 	level_label.text = "Level Up!"
 	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	level_label.add_theme_font_size_override("font_size", 32)
-	level_label.add_theme_color_override("font_color", Color.BLACK)  # Black text on green background
+	level_label.add_theme_font_size_override("font_size", base_font_size)
+	level_label.add_theme_color_override("font_color", Color.WHITE)
 	content_vbox.add_child(level_label)
 	
 	var title_label = Label.new()
 	title_label.name = "TitleLabel"
 	title_label.text = "Choose Your Perk"
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.add_theme_font_size_override("font_size", 20)
-	title_label.add_theme_color_override("font_color", Color.BLACK)
+	title_label.add_theme_font_size_override("font_size", title_font_size)
+	title_label.add_theme_color_override("font_color", Color.LIGHT_GRAY)
 	content_vbox.add_child(title_label)
 	
 	var separator = HSeparator.new()
@@ -141,10 +202,11 @@ func create_simple_level_up_ui() -> Control:
 	perk_container.add_theme_constant_override("separation", 20)
 	content_vbox.add_child(perk_container)
 	
-	print("UI structure created with BRIGHT COLORS - will be positioned at player location!")
+	print("UI created with viewport size: ", viewport_size, " and camera zoom: ", camera_zoom)
+	print("Visible area: ", visible_area, " Panel size: ", Vector2(panel_width, panel_height))
 	return ui
 
-# Handle level up UI directly in player script
+# Update the show_level_up_ui function to handle dynamic sizing
 func show_level_up_ui():
 	print("show_level_up_ui called")
 	
@@ -162,6 +224,9 @@ func show_level_up_ui():
 	level_up_ui.global_position = global_position
 	print("Positioned UI at player location: ", global_position)
 	
+	# Update UI sizing based on current viewport/camera settings
+	update_level_up_ui_sizing()
+	
 	var available_perks = perk_manager.generate_random_perks(level, 3)
 	print("Generated %d perks for level %d" % [available_perks.size(), level])
 	
@@ -174,55 +239,71 @@ func show_level_up_ui():
 	var level_label = level_up_ui.find_child("LevelLabel", true, false)
 	var title_label = level_up_ui.find_child("TitleLabel", true, false)
 	
-	print("Found level_label: ", level_label)
-	print("Found title_label: ", title_label)
-	
 	if level_label:
 		level_label.text = "Level %d Reached!" % level
 	if title_label:
 		title_label.text = "Choose Your Perk"
 	
-	# Create perk buttons
-	var perk_container = level_up_ui.find_child("PerkContainer", true, false)
-	print("Found perk_container: ", perk_container)
+	# Create perk buttons with responsive sizing
+	create_responsive_perk_buttons(available_perks)
 	
+	# Show UI and pause
+	level_up_ui.visible = true
+	get_tree().paused = true
+	print("Level up UI shown with responsive sizing")
+
+func update_level_up_ui_sizing():
+	# Get current viewport and camera settings
+	var viewport_size = Vector2(get_viewport().size)  # Convert Vector2i to Vector2
+	var camera_zoom = camera.zoom
+	var visible_area = viewport_size / camera_zoom
+	
+	# Update overlay size
+	var overlay = level_up_ui.get_child(0) as ColorRect
+	if overlay:
+		overlay.size = visible_area
+		overlay.position = -visible_area / 2
+	
+	# Update background panel size
+	var background = level_up_ui.get_child(1) as Panel
+	if background:
+		var panel_width = min(visible_area.x * 0.8, 800)
+		var panel_height = min(visible_area.y * 0.6, 400)
+		background.size = Vector2(panel_width, panel_height)
+		background.position = Vector2(-panel_width / 2, -panel_height / 2)
+
+func create_responsive_perk_buttons(available_perks: Array):
+	var perk_container = level_up_ui.find_child("PerkContainer", true, false)
 	if not perk_container:
-		print("Could not find perk container!")
-		handle_level_up_without_ui()
 		return
 	
 	# Clear existing buttons
 	for child in perk_container.get_children():
 		child.queue_free()
 	
-	print("Creating %d perk buttons..." % available_perks.size())
+	# Calculate button size based on viewport
+	var viewport_size = Vector2(get_viewport().size)  # Convert Vector2i to Vector2
+	var camera_zoom = camera.zoom
+	var visible_area = viewport_size / camera_zoom
+	
+	var button_width = min(visible_area.x / 5, 200)  # Responsive button width
+	var button_height = min(visible_area.y / 4, 120)  # Responsive button height
+	var font_size = min(visible_area.x / 80, 14)      # Responsive font size
 	
 	# Create buttons for each perk
 	for i in range(available_perks.size()):
 		var perk = available_perks[i]
 		var button = Button.new()
 		button.text = "%s\n%s\n(%s)" % [perk.perk_name, perk.description, perk.get_rarity_name()]
-		button.custom_minimum_size = Vector2(200, 120)
+		button.custom_minimum_size = Vector2(button_width, button_height)
 		button.modulate = perk.get_rarity_color()
+		button.add_theme_font_size_override("font_size", font_size)
 		
 		# Connect button to selection
 		button.pressed.connect(_on_perk_selected.bind(perk))
 		
 		perk_container.add_child(button)
-		print("Created button for: ", perk.perk_name)
-	
-	# Show UI and pause
-	print("Setting UI visible and pausing game...")
-	print("UI visible before: ", level_up_ui.visible)
-	print("UI global position: ", level_up_ui.global_position)
-	print("UI size: ", level_up_ui.size)
-	
-	level_up_ui.visible = true
-	get_tree().paused = true
-	
-	print("UI visible after: ", level_up_ui.visible)
-	print("Game paused: ", get_tree().paused)
-	print("Level up UI shown with %d perk options at player position" % available_perks.size())
+		print("Created responsive button for: ", perk.perk_name)
 
 func _on_perk_selected(perk: Perk):
 	# Add perk to manager
@@ -316,6 +397,20 @@ func _physics_process(delta: float) -> void:
 	
 	# Movement
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	
+	# Play walk animation when moving and handle flipping
+	if direction.length() > 0:
+		current_animations.play("walk")
+		
+		# Flip sprite based on horizontal movement direction
+		if direction.x < 0:  # Moving left
+			current_sprite.flip_h = true
+		elif direction.x > 0:  # Moving right
+			current_sprite.flip_h = false
+		# Don't change flip_h if only moving vertically (direction.x == 0)
+	else:
+		current_animations.play("idle")
+	
 	var current_speed = dash_speed if is_dashing else SPEED
 	velocity = direction * current_speed
 	
@@ -331,7 +426,7 @@ func _physics_process(delta: float) -> void:
 	ray.target_position = to_mouse
 
 	# Rotate the player to face the mouse
-	rotation = to_mouse.angle() + deg_to_rad(90)
+	#rotation = to_mouse.angle() + deg_to_rad(90)
 
 	# Toggle auto attack
 	if Input.is_action_just_pressed("auto_toggle"):
@@ -498,10 +593,10 @@ func start_mud_wallow():
 	tween.tween_method(_heal_over_time, 0.0, regen_amount, wallow_duration)
 	
 	# Visual effect
-	modulate = Color.BROWN
+	current_sprite.modulate = Color.BROWN
 	var reset_tween = create_tween()
 	reset_tween.tween_delay(wallow_duration)
-	reset_tween.tween_callback(func(): modulate = Color.WHITE)
+	reset_tween.tween_callback(func(): current_sprite.modulate = Color.WHITE)
 	
 	print("Mud wallow started!")
 
@@ -612,19 +707,10 @@ func die():
 func setup_vampire_survivors_camera():
 	if camera:
 		# Vampire Survivors style zoom - much more zoomed out
-		camera.zoom = Vector2(0.3, 0.3)  # Try values between 0.2-0.4
+		camera.zoom = Vector2(2, 2)  # Try values between 0.2-0.4
 		
 		# Enable camera smoothing for smoother movement
 		camera.enabled = true
 		camera.position_smoothing_enabled = true
-		camera.position_smoothing_speed = 5.0  # Adjust for responsiveness
-		
-		# Optional: Add camera limits if you have world boundaries
-		# camera.limit_left = -5000
-		# camera.limit_right = 5000
-		# camera.limit_top = -5000
-		# camera.limit_bottom = 5000
-		
-		# Make camera current
+		camera.position_smoothing_speed = 5.0
 		camera.make_current()
-		print("Vampire Survivors camera setup complete - Zoom: ", camera.zoom)

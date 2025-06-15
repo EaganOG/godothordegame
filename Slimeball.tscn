@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://qni6k7bv5j1v"]
+[gd_scene load_steps=7 format=3 uid="uid://qni6k7bv5j1v"]
 
 [ext_resource type="Texture2D" uid="uid://bmpvj7g6wuqc2" path="res://Slimeball.png" id="1_p5u1r"]
 [ext_resource type="Script" uid="uid://btfg0xmjly78e" path="res://slimeball.gd" id="2_hp7gb"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_p5u1r"]
 
 [sub_resource type="Animation" id="Animation_ffi80"]
 resource_name = "shoot"
@@ -46,6 +48,12 @@ scale = Vector2(4, 4)
 texture = ExtResource("1_p5u1r")
 hframes = 4
 script = ExtResource("2_hp7gb")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(0.833825, 0.833825)
+shape = SubResource("CircleShape2D_p5u1r")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

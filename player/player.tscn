@@ -1,42 +1,167 @@
-[gd_scene load_steps=6 format=3 uid="uid://df4yy2bi18l24"]
+[gd_scene load_steps=13 format=3 uid="uid://df4yy2bi18l24"]
 
 [ext_resource type="Script" uid="uid://btio2vuau4twk" path="res://player/player.gd" id="1_4flbx"]
+[ext_resource type="Texture2D" uid="uid://xsf0bw1tiejs" path="res://piggy_sheet.png" id="2_rkbax"]
+[ext_resource type="Texture2D" uid="uid://b72vxahi1lh0c" path="res://frog_brown_spritesheet.png" id="3_g1dw6"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_oul6g"]
+[sub_resource type="Animation" id="Animation_g1dw6"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.266667, 0.45, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
 
-[sub_resource type="SphereMesh" id="SphereMesh_rkbax"]
+[sub_resource type="Animation" id="Animation_yw30f"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
 
-[sub_resource type="BoxMesh" id="BoxMesh_oul6g"]
+[sub_resource type="Animation" id="Animation_qjkh3"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.266667, 0.366667),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [5, 6, 7, 8]
+}
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_oul6g"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_g6k8r"]
+_data = {
+&"RESET": SubResource("Animation_yw30f"),
+&"idle": SubResource("Animation_g1dw6"),
+&"walk": SubResource("Animation_qjkh3")
+}
+
+[sub_resource type="Animation" id="Animation_g6k8r"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0833333, 0.3, 0.533333, 0.766667),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [4, 10, 16, 22]
+}
+
+[sub_resource type="Animation" id="Animation_boad6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+
+[sub_resource type="Animation" id="Animation_rgyib"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.05, 0.133333, 0.2, 0.3, 0.383333),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [3, 9, 15, 21, 15]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hg6s5"]
+_data = {
+&"RESET": SubResource("Animation_boad6"),
+&"idle": SubResource("Animation_g6k8r"),
+&"walk": SubResource("Animation_rgyib")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g1dw6"]
 
 [node name="playerNode" type="CharacterBody2D"]
 script = ExtResource("1_4flbx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(8.95712, 8.95712)
-shape = SubResource("CircleShape2D_oul6g")
+[node name="pigSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -7)
+texture = ExtResource("2_rkbax")
+hframes = 5
+vframes = 2
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
-position = Vector2(-5.96046e-08, 0)
-scale = Vector2(175.759, 175.56)
-mesh = SubResource("SphereMesh_rkbax")
+[node name="piganimations" type="AnimationPlayer" parent="pigSprite"]
+libraries = {
+&"": SubResource("AnimationLibrary_g6k8r")
+}
 
-[node name="MeshInstance2D2" type="MeshInstance2D" parent="MeshInstance2D"]
-position = Vector2(6.07521e-10, -0.316319)
-scale = Vector2(0.12231, 0.59185)
-mesh = SubResource("BoxMesh_oul6g")
+[node name="slugSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -7)
+
+[node name="slugAnimations" type="AnimationPlayer" parent="slugSprite"]
+
+[node name="lizardSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -7)
+
+[node name="lizAnimations" type="AnimationPlayer" parent="lizardSprite"]
+
+[node name="toadSprite" type="Sprite2D" parent="."]
+position = Vector2(-1, 1)
+texture = ExtResource("3_g1dw6")
+hframes = 6
+vframes = 4
+frame = 2
+
+[node name="toadAnimations" type="AnimationPlayer" parent="toadSprite"]
+libraries = {
+&"": SubResource("AnimationLibrary_hg6s5")
+}
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.3, 0.3)
+zoom = Vector2(1.5, 1.5)
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
-scale = Vector2(9.67374, 1.79143)
+scale = Vector2(3.72437, 0.689698)
 target_position = Vector2(0, -102)
 
 [node name="hurtbox" type="Area2D" parent="."]
-scale = Vector2(1.79143, 1.79143)
+scale = Vector2(0.328884, 0.328884)
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="hurtbox"]
-scale = Vector2(5.04, 5.04)
-shape = SubResource("RectangleShape2D_oul6g")
+scale = Vector2(3.98935, 3.98935)
+shape = SubResource("CircleShape2D_g1dw6")

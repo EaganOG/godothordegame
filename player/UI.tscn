@@ -19,12 +19,17 @@ alignment = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_x5gix")
+theme_override_font_sizes/font_size = 30
 
 [node name="Stamina" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1.51612e-06, 0.653202, 5.77569e-07, 1)
+theme_override_font_sizes/font_size = 30
 
 [node name="exp" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.561945, 0.000691543, 0.654179, 1)
+theme_override_font_sizes/font_size = 30
 
 [node name="Level" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

@@ -9,7 +9,7 @@ class_name PlayerClass
 # Base stats
 @export var base_health: int = 100
 @export var base_stamina: int = 100
-@export var base_speed: int = 600
+@export var base_speed: int = 60
 @export var base_damage: int = 25
 
 # Stat multipliers (1.0 = normal, 1.5 = 50% bonus, etc.)

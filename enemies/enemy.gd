@@ -3,7 +3,7 @@ extends CharacterBody2D
 class_name Enemy
 
 var health := 100
-var speed := 100
+var speed := 45
 var target: Node = null
 var exp_reward := 25
 

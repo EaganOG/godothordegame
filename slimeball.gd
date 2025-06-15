@@ -8,7 +8,14 @@ var spawn_position: Vector2  # Track where the arrow was created
 
 func _ready() -> void:
 	$AnimationPlayer.play("shoot")
-	connect("body_entered", self._on_body_entered)
+	
+	# Connect to the Area2D's body_entered signal instead
+	var area = $Area2D  # Assuming you have an Area2D child node
+	if area:
+		area.body_entered.connect(_on_body_entered)
+	else:
+		print("Warning: No Area2D found on slimeball!")
+	
 	spawn_position = global_position  # Remember where we started
 
 func _process(delta):

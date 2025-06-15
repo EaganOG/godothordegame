@@ -2,7 +2,6 @@
 extends Control
 
 @onready var class_container = $VBoxContainer/MainContainer/ClassContainer
-@onready var class_name_label = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/ClassName
 @onready var class_description = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/Description
 @onready var stats_label = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/Stats
 @onready var abilities_label = $VBoxContainer/MainContainer/InfoPanel/ClassInfo/Abilities
@@ -16,16 +15,15 @@ var class_buttons: Array[Button] = []
 signal class_selected(player_class: PlayerClass)
 
 func _ready():
-	# Check if PlayerClass exists, if not create a simple fallback
 	if PlayerClass == null:
-		push_error("PlayerClass not found! Make sure PlayerClass.gd is created.")
+		push_error("PlayerClass not found!")
 		return
 	
 	available_classes = PlayerClass.get_all_classes()
 	create_class_buttons()
 	
 	if available_classes.size() > 0:
-		select_class(available_classes[0])  # Select first class by default
+		select_class(available_classes[0])
 		
 	back_button.pressed.connect(_on_back_pressed)
 
@@ -42,6 +40,7 @@ func create_class_buttons():
 		var button = Button.new()
 		button.text = player_class.player_class_name
 		button.custom_minimum_size = Vector2(150, 80)
+		button.add_theme_font_size_override("font_size", 50)
 		button.pressed.connect(_on_class_button_pressed.bind(i))
 		
 		class_container.add_child(button)
@@ -59,7 +58,6 @@ func update_class_info():
 	if not selected_class:
 		return
 	
-	class_name_label.text = selected_class.player_class_name
 	class_description.text = selected_class.description
 	
 	# Display stats

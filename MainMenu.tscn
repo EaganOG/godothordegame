@@ -14,8 +14,11 @@ script = ExtResource("1_eiy7p")
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -4.0
+offset_top = -9.0
+offset_right = 2996.0
+offset_bottom = 1431.0
+scale = Vector2(1.05258, 1.05258)
 texture = ExtResource("2_h7a2f")
 
 [node name="Label" type="Label" parent="."]
